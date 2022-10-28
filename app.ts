@@ -4,7 +4,10 @@ const app = express();
 
 const path = require("path");
 
-const port = process.env.PORT || 3030;
+const port = process.env.PORT || 5000;
+
+// add middleware
+app.use(express.static("public"));
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("build"));
