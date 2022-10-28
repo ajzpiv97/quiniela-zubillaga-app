@@ -1,22 +1,17 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import SignIn from "./views/Login";
+import SignUp from "./views/SignUp";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>En construcción!</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Quniela Familia Zubillaga
-        </a>
-      </header>
+      <h1>Quiniela Zubillaga Mundial 2022</h1>
+      <Routes>
+        <Route path="/login" element={<SignIn />} />
+        <Route path="/" element={<SignUp />} />
+      </Routes>
     </div>
   );
 }
