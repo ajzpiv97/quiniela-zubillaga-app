@@ -11,6 +11,9 @@ if (process.env.NODE_ENV === "production") {
   app.get("/*", (req, res) => {
     req.sendFile(path.resolve(__dirname, "build", "index.html"));
   });
+  app.get("/login", (req, res) => {
+    req.sendFile(path.resolve(__dirname, "build", "index.html"));
+  });
 }
 
 app.listen(port, (err) => {
