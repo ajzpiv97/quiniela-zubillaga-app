@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as LinkRouter } from "react-router-dom";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function Copyright(props: any) {
   return (
@@ -34,15 +36,50 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+const LogIn = () => {
+  const formik = useFormik({
+    initialValues: {
+      email: 'username@email.com',
+      password: 'Password123',
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Invalid email format').required('Required'),
+      password: Yup.string().max(255).required('Password is required'),
+
+    }),
+    
+    onSubmit: () => {
+      
+    fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        email: formik.values.email,
+        password: formik.values.password
+      }),
+    })
+      .then((response) => response.json())
+      .then(response  => {
+        console.log(response.code)
+        if(response.code === 401){
+           window.alert(response.description)
+        }
+        else if (response.code === 400){
+          window.alert(response.description)
+       }
+        else{
+          //add redirect 
+          console.log(response)
+          return 
+        }
+        });
+  }
+
+});
 
   return (
     <ThemeProvider theme={theme}>
@@ -64,28 +101,32 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             noValidate
             sx={{ mt: 1 }}
           >
             <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Correo Electrónico"
-              name="email"
-              autoComplete="email"
+               error={Boolean(formik.touched.email && formik.errors.email)}
+               fullWidth
+               onBlur={formik.handleBlur}
+               onChange={formik.handleChange}
+               value={formik.values.email}
+               id="email"
+               label="Correo Electrónico"
+               name="email"
+               autoComplete="email"
             />
             <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+            error={Boolean(formik.touched.password && formik.errors.password)}
+            fullWidth
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.password}
+            name="password"
+            label="Contraseña"
+            type="password"
+            id="password"
+            autoComplete="new-password"
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -121,3 +162,5 @@ export default function SignIn() {
     </ThemeProvider>
   );
 }
+
+export default LogIn

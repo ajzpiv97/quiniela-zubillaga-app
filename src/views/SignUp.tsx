@@ -72,6 +72,7 @@ const SignUp = () => {
            window.alert("User already exists try again")
         }
         else{
+          //fix redirect
           console.log(response)
           return redirect("/login");
         }
