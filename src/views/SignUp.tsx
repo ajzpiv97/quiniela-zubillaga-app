@@ -10,7 +10,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, redirect } from "react-router-dom";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function Copyright(props: any) {
   return (
@@ -32,10 +34,23 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+const SignUp = () => {
+  const formik = useFormik({
+    initialValues: {
+      email: 'username@email.com',
+      password: 'Password123',
+      name: 'Nombre',
+      lastName: 'Apellido'
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Invalid email format').required('Required'),
+      password: Yup.string().max(255).required('Password is required'),
+      name: Yup.string().required('Name is required'),
+      lastName: Yup.string().required("Last name is required")
+    }),
+    
+    onSubmit: () => {
+      
     fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
       method: "POST",
       headers: {
@@ -44,15 +59,26 @@ export default function SignUp() {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        email: data.get("email"),
-        name: data.get("firstName"),
-        password: data.get("password"),
-        lastName: data.get("lastName"),
+        email: formik.values.email,
+        name: formik.values.name,
+        password: formik.values.password,
+        lastName: formik.values.lastName,
       }),
     })
       .then((response) => response.json())
-      .then((response) => console.log(JSON.stringify(response)));
-  };
+      .then(response  => {
+        console.log(response.code)
+        if(response.code === 400){
+           window.alert("User already exists try again")
+        }
+        else{
+          console.log(response)
+          return redirect("/login");
+        }
+        });
+  }
+
+});
 
   return (
     <ThemeProvider theme={theme}>
@@ -75,24 +101,32 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
+                  error={Boolean(formik.touched.name && formik.errors.name)}
                   fullWidth
-                  id="firstName"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.name}
+                  autoComplete="given-name"
+                  name="name"
+                  required
+                  id="name"
                   label="Nombre"
+                  
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
+                  error={Boolean(formik.touched.lastName && formik.errors.lastName)}
                   fullWidth
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.lastName}
                   id="lastName"
                   label="Apellido"
                   name="lastName"
@@ -101,8 +135,11 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
+                  error={Boolean(formik.touched.email && formik.errors.email)}
                   fullWidth
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.email}
                   id="email"
                   label="Correo Electrónico"
                   name="email"
@@ -111,8 +148,12 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
+                  error={Boolean(formik.touched.password && formik.errors.password)}
                   fullWidth
+                
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.password}
                   name="password"
                   label="Contraseña"
                   type="password"
@@ -146,3 +187,5 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+
+export default SignUp;
