@@ -36,24 +36,22 @@ export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-
-    fetch('https://quiniela-zubillaga-api.herokuapp.com/auth/register', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ "email": data.get("email") ,
-                          "name": data.get("firstName"),
-                          "password" :data.get("password") ,
-                          "lastName":data.get("last_name")
-                            })
-})
-.then(response => response.json())
-.then(response => console.log(JSON.stringify(response)))
+    fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        email: data.get("email"),
+        name: data.get("firstName"),
+        password: data.get("password"),
+        lastName: data.get("lastName"),
+      }),
+    })
+      .then((response) => response.json())
+      .then((response) => console.log(JSON.stringify(response)));
   };
 
   return (
