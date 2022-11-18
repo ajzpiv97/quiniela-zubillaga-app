@@ -1,6 +1,6 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -10,9 +10,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as LinkRouter, redirect } from "react-router-dom";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 function Copyright(props: any) {
   return (
@@ -35,50 +35,46 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      email: 'username@email.com',
-      password: 'Password123',
-      name: 'Nombre',
-      lastName: 'Apellido'
+      email: "username@email.com",
+      password: "Password123",
+      name: "Nombre",
+      lastName: "Apellido",
     },
     validationSchema: Yup.object({
-      email: Yup.string().email('Invalid email format').required('Required'),
-      password: Yup.string().max(255).required('Password is required'),
-      name: Yup.string().required('Name is required'),
-      lastName: Yup.string().required("Last name is required")
+      email: Yup.string().email("Invalid email format").required("Required"),
+      password: Yup.string().max(255).required("Password is required"),
+      name: Yup.string().required("Name is required"),
+      lastName: Yup.string().required("Last name is required"),
     }),
-    
-    onSubmit: () => {
-      
-    fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        email: formik.values.email,
-        name: formik.values.name,
-        password: formik.values.password,
-        lastName: formik.values.lastName,
-      }),
-    })
-      .then((response) => response.json())
-      .then(response  => {
-        console.log(response.code)
-        if(response.code === 400){
-           window.alert("User already exists try again")
-        }
-        else{
-          console.log(response)
-          return redirect("/login");
-        }
-        });
-  }
 
-});
+    onSubmit: () => {
+      fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          email: formik.values.email,
+          name: formik.values.name,
+          password: formik.values.password,
+          lastName: formik.values.lastName,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.code === 400) {
+            window.alert(response["description"]);
+          } else {
+            return navigate("/login");
+          }
+        });
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -117,12 +113,13 @@ const SignUp = () => {
                   required
                   id="name"
                   label="Nombre"
-                  
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  error={Boolean(formik.touched.lastName && formik.errors.lastName)}
+                  error={Boolean(
+                    formik.touched.lastName && formik.errors.lastName
+                  )}
                   fullWidth
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
@@ -148,9 +145,10 @@ const SignUp = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  error={Boolean(formik.touched.password && formik.errors.password)}
+                  error={Boolean(
+                    formik.touched.password && formik.errors.password
+                  )}
                   fullWidth
-                
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   value={formik.values.password}
@@ -162,14 +160,15 @@ const SignUp = () => {
                 />
               </Grid>
             </Grid>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              loading={formik.isSubmitting}
             >
               Sign Up
-            </Button>
+            </LoadingButton>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <LinkRouter
@@ -186,6 +185,6 @@ const SignUp = () => {
       </Container>
     </ThemeProvider>
   );
-}
+};
 
 export default SignUp;
