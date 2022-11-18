@@ -3,6 +3,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import SignIn from "./views/Login";
 import SignUp from "./views/SignUp";
+import BasicTable from "./views/Table"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<SignIn />} />
         <Route path="/" element={<SignUp />} />
+        <Route path="/table" element={<BasicTable/>} />
       </Routes>
     </div>
   );

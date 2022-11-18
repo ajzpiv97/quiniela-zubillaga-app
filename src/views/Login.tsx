@@ -77,7 +77,7 @@ const LogIn = () => {
           console.log(response)
           localStorage.setItem("token", response.data.token)
           //console.log(localStorage.getItem("token"))
-          return navigate("/login");
+          return navigate("/table");
         }
         });
   }
