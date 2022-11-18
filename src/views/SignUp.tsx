@@ -4,64 +4,31 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import CssBaseline from "@mui/material/CssBaseline";
 import SaveIcon from "@mui/icons-material/Save";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as LinkRouter, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { OverridableStringUnion } from "@mui/types";
-import { ButtonPropsColorOverrides } from "@mui/material";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import Copyright from "../components/copyright";
+import { submitButtonHelper } from "../utils/styleHelper";
 
 const theme = createTheme();
 
-const submitButtonHelper = (buttonStatus: string) => {
-  if (buttonStatus === "success") {
-    return "Usuario Creado!";
-  } else if (buttonStatus === "error") {
-    return "Error!";
-  } else {
-    return "Inscribete";
-  }
-};
-
 const SignUp = () => {
   const [loading, setLoading] = React.useState(false);
-  const [buttonColorStatus, setButtonColorStatus] =
-    React.useState<
-      OverridableStringUnion<
-        | "inherit"
-        | "primary"
-        | "secondary"
-        | "success"
-        | "error"
-        | "info"
-        | "warning",
-        ButtonPropsColorOverrides
-      >
-    >("primary");
+  const [buttonColorStatus, setButtonColorStatus] = React.useState<
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "error"
+    | "info"
+    | "warning"
+  >("primary");
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -99,7 +66,6 @@ const SignUp = () => {
         })
         .then((response) => {
           if (response.code === 400) {
-            setLoading(false);
             setButtonColorStatus("error");
             throw new Error(response["description"]);
           } else {
@@ -208,19 +174,20 @@ const SignUp = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               loading={loading}
+              loadingPosition="start"
               startIcon={<SaveIcon />}
               color={buttonColorStatus}
             >
-              {submitButtonHelper(buttonColorStatus)}
+              {submitButtonHelper(buttonColorStatus, "signUp", loading)}
             </LoadingButton>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <LinkRouter
+                <Link
                   to="/login"
                   className="css-101ca9i-MuiTypography-root-MuiLink-root"
                 >
-                  Already have an account? Sign in
-                </LinkRouter>
+                  Ya tienes una cuenta? Inicia sesión
+                </Link>
               </Grid>
             </Grid>
           </Box>

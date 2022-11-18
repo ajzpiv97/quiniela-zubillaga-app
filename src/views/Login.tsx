@@ -1,88 +1,86 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as LinkRouter, useNavigate } from "react-router-dom";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import SendIcon from "@mui/icons-material/Send";
+import LoadingButton from "@mui/lab/LoadingButton";
 
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import Copyright from "../components/copyright";
+import { submitButtonHelper } from "../utils/styleHelper";
 
 const theme = createTheme();
 
 const LogIn = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [buttonColorStatus, setButtonColorStatus] = React.useState<
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "error"
+    | "info"
+    | "warning"
+  >("primary");
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      email: 'username@email.com',
-      password: 'Password123',
+      email: "username@email.com",
+      password: "Password123",
     },
     validationSchema: Yup.object({
-      email: Yup.string().email('Invalid email format').required('Required'),
-      password: Yup.string().max(255).required('Password is required'),
-
+      email: Yup.string().email("Invalid email format").required("Required"),
+      password: Yup.string().max(255).required("Password is required"),
     }),
-    
-    onSubmit: () => {
-      
-    fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        email: formik.values.email,
-        password: formik.values.password
-      }),
-    })
-      .then((response) => response.json())
-      .then(response  => {
-        console.log(response.code)
-        if(response.code === 401){
-           window.alert(response.description)
-        }
-        else if (response.code === 400){
-          window.alert(response.description)
-       }
-        else{
-          //add redirect 
-          console.log(response)
-          localStorage.setItem("token", response.data.token)
-          //console.log(localStorage.getItem("token"))
-          return navigate("/login");
-        }
-        });
-  }
 
-});
+    onSubmit: () => {
+      setLoading(formik.isSubmitting);
+      fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          email: formik.values.email,
+          password: formik.values.password,
+        }),
+      })
+        .then((response) => {
+          setLoading(false);
+          return response.json();
+        })
+        .then((response) => {
+          if (response.code === 401 || response.code === 400) {
+            setButtonColorStatus("error");
+            throw new Error(response["description"]);
+          } else {
+            //add redirect
+            setButtonColorStatus("success");
+            localStorage.setItem("token", response.data.token);
+            //console.log(localStorage.getItem("token"))
+            return navigate("/");
+          }
+        })
+        .catch((error) => {
+          window.alert(error);
+          setTimeout(() => {
+            setButtonColorStatus("primary");
+          }, 1000);
+        });
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -106,56 +104,68 @@ const LogIn = () => {
             component="form"
             onSubmit={formik.handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
+            sx={{ mt: 3 }}
           >
-            <TextField
-               error={Boolean(formik.touched.email && formik.errors.email)}
-               fullWidth
-               onBlur={formik.handleBlur}
-               onChange={formik.handleChange}
-               value={formik.values.email}
-               id="email"
-               label="Correo Electrónico"
-               name="email"
-               autoComplete="email"
-            />
-            <TextField
-            error={Boolean(formik.touched.password && formik.errors.password)}
-            fullWidth
-            onBlur={formik.handleBlur}
-            onChange={formik.handleChange}
-            value={formik.values.password}
-            name="password"
-            label="Contraseña"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  error={Boolean(formik.touched.email && formik.errors.email)}
+                  fullWidth
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.email}
+                  id="email"
+                  label="Correo Electrónico"
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  error={Boolean(
+                    formik.touched.password && formik.errors.password
+                  )}
+                  fullWidth
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.password}
+                  name="password"
+                  label="Contraseña"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
+            </Grid>
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              loading={loading}
+              loadingPosition="start"
+              startIcon={<SendIcon />}
+              color={buttonColorStatus}
             >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
+              {submitButtonHelper(buttonColorStatus, "login", loading)}
+            </LoadingButton>
+            <Grid container direction="row-reverse">
+              {/* <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
-              </Grid>
+              </Grid> */}
               <Grid item>
-                <LinkRouter
+                <Link
                   to="/"
                   className="css-101ca9i-MuiTypography-root-MuiLink-root"
                 >
-                  Don't have an account? Sign Up
-                </LinkRouter>
+                  No tienes cuenta? Inscríbete
+                </Link>
               </Grid>
             </Grid>
           </Box>
@@ -164,6 +174,6 @@ const LogIn = () => {
       </Container>
     </ThemeProvider>
   );
-}
+};
 
-export default LogIn
+export default LogIn;
