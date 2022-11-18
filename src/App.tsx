@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./views/Login";
 import SignUp from "./views/SignUp";
 import { Box, Typography } from "@mui/material";
+import BasicTable from "./views/Table";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/login" element={<SignIn />} />
           <Route path="/" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/table" element={<BasicTable />} />
         </Routes>
       </Box>
     </div>
