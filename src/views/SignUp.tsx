@@ -2,6 +2,7 @@ import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CssBaseline from "@mui/material/CssBaseline";
+import SaveIcon from "@mui/icons-material/Save";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
@@ -13,6 +14,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { OverridableStringUnion } from "@mui/types";
+import { ButtonPropsColorOverrides } from "@mui/material";
 
 function Copyright(props: any) {
   return (
@@ -34,7 +37,31 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
+const submitButtonHelper = (buttonStatus: string) => {
+  if (buttonStatus === "success") {
+    return "Usuario Creado!";
+  } else if (buttonStatus === "error") {
+    return "Error!";
+  } else {
+    return "Inscribete";
+  }
+};
+
 const SignUp = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [buttonColorStatus, setButtonColorStatus] =
+    React.useState<
+      OverridableStringUnion<
+        | "inherit"
+        | "primary"
+        | "secondary"
+        | "success"
+        | "error"
+        | "info"
+        | "warning",
+        ButtonPropsColorOverrides
+      >
+    >("primary");
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -51,6 +78,7 @@ const SignUp = () => {
     }),
 
     onSubmit: () => {
+      setLoading(formik.isSubmitting);
       fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
         method: "POST",
         headers: {
@@ -65,13 +93,27 @@ const SignUp = () => {
           lastName: formik.values.lastName,
         }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          setLoading(false);
+          return response.json();
+        })
         .then((response) => {
           if (response.code === 400) {
-            window.alert(response["description"]);
+            setLoading(false);
+            setButtonColorStatus("error");
+            throw new Error(response["description"]);
           } else {
-            return navigate("/login");
+            setButtonColorStatus("success");
+            setTimeout(() => {
+              return navigate("/login");
+            }, 1000);
           }
+        })
+        .catch((error) => {
+          window.alert(error);
+          setTimeout(() => {
+            setButtonColorStatus("primary");
+          }, 1000);
         });
     },
   });
@@ -165,9 +207,11 @@ const SignUp = () => {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              loading={formik.isSubmitting}
+              loading={loading}
+              startIcon={<SaveIcon />}
+              color={buttonColorStatus}
             >
-              Sign Up
+              {submitButtonHelper(buttonColorStatus)}
             </LoadingButton>
             <Grid container justifyContent="flex-end">
               <Grid item>
