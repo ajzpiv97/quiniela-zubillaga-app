@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -37,6 +37,7 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 const LogIn = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: 'username@email.com',
@@ -74,7 +75,9 @@ const LogIn = () => {
         else{
           //add redirect 
           console.log(response)
-          return 
+          localStorage.setItem("token", response.data.token)
+          //console.log(localStorage.getItem("token"))
+          return navigate("/login");
         }
         });
   }
