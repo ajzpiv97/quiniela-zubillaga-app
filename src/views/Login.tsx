@@ -70,7 +70,7 @@ const LogIn = () => {
             setButtonColorStatus("success");
             localStorage.setItem("token", response.data.token);
             //console.log(localStorage.getItem("token"))
-            return navigate("/");
+            return navigate("/table");
           }
         })
         .catch((error) => {
