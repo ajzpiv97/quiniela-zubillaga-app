@@ -23,8 +23,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from "react-router-dom";
 import { getRadioUtilityClass } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
-import menuBar from "../components/menubar";
-
+import MenuBar from "../components/menubar";
 
 
 const theme = createTheme();
@@ -35,11 +34,6 @@ interface rowDataI {
   position: number;
   points: number | string;
 }
-
-const pages = ['Tabla', 'Predicciones'];
-const settings = [];
-
-
 
 
 const fetchTableEntries = async (): Promise<Response> => {
@@ -58,7 +52,7 @@ const fetchTableEntries = async (): Promise<Response> => {
 };
 
 
-export default function BasicTable() {
+const ScoreTable = () => {
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
@@ -110,3 +104,4 @@ export default function BasicTable() {
     </ThemeProvider>
   );
 }
+export default ScoreTable;

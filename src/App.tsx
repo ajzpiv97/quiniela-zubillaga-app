@@ -3,8 +3,9 @@ import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./views/Login";
 import SignUp from "./views/SignUp";
+import Dashboard from "./views/Dashboard";
 import { Box, Typography } from "@mui/material";
-import BasicTable from "./views/Table";
+import BasicTable from "./views/ScoreTable";
 import menuBar from "./components/menubar";
 import Container from "@mui/material/Container";
 import Toolbar from '@mui/material/Toolbar';
@@ -24,7 +25,7 @@ function App() {
           <Route path="/login" element={<SignIn />} />
           <Route path="/" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/Tabla" element={<BasicTable />} />
+          <Route path="/Tabla" element={<Dashboard />} />
         </Routes>
       </Box>
     </div>
