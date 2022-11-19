@@ -5,11 +5,6 @@ import SignIn from "./views/Login";
 import SignUp from "./views/SignUp";
 import Dashboard from "./views/Dashboard";
 import { Box, Typography } from "@mui/material";
-import BasicTable from "./views/ScoreTable";
-import menuBar from "./components/menubar";
-import Container from "@mui/material/Container";
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';   
 import { ReactComponent as GiSoccerKick } from './pulic/icon.svg'
 const pages = ['Tabla', 'Predicciones'];
 
