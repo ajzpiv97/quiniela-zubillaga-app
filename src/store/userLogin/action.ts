@@ -12,6 +12,9 @@ export const isUserAuthenticated = () => {
 
     const expirationDatePattern = expirationDate.match(pattern)![0];
     const utcNowDatePattern = utcNowDate.match(pattern)![0];
+
+    console.log(expirationDatePattern, utcNowDatePattern);
+
     if (
       expirationDatePattern !== undefined &&
       utcNowDatePattern !== undefined

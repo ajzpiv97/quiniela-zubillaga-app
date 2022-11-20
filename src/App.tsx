@@ -12,6 +12,8 @@ import { isUserAuthenticated } from "./store/actions";
 function App() {
   const isLoggedIn = useAppSelector((state) => state.authReducer["isLoggedIn"]);
 
+  console.log(isLoggedIn, localStorage.getItem("token"));
+
   let location = useLocation();
   let dispatch = useAppDispatch();
   React.useEffect(() => {
