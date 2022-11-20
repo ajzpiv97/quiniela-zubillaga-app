@@ -4,13 +4,17 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
+import { string } from "yup";
 
 const theme = createTheme();
 
-interface GroupDataI{
-    [key: string]: Array<gameDataI>
-}
+// interface GroupDataI {
+//   [key: string]: Array<gameDataI>;
+// }
 
+interface groupDataI {
+  [key: string]: Array<gameDataI>;
+}
 interface gameDataI {
   ActualScore: string;
   TeamA: string;
@@ -35,7 +39,8 @@ const fetchTableEntries = async (): Promise<Response> => {
 
 const Predictions = () => {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [rowData, setRowData] = React.useState<Array<GroupDataI>>([]);
+  const [rowData, setRowData] = React.useState({});
+  // console.log(rowData);
 
   React.useEffect(() => {
     fetchTableEntries()
@@ -54,35 +59,79 @@ const Predictions = () => {
     </Box>
   ) : (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xl">
-        {rowData.map((group:Array<GroupDataI>, index) => (
-            <div>{group.map((row,index) => ( 
-                <Box
-            m={23}
+      <Container
+        sx={{
+          display: "inline-flex",
+          flexWrap: "wrap",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+        maxWidth="xl"
+      >
+        {Object.entries(rowData).map(([key, value]: any, index) => (
+          <Box
             pt={0.2}
-            sx={{ display: "flex", alignItems: "center" }}
+            pr={0.1}
+            pl={0.1}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              flexWrap: "wrap",
+            }}
             key={index}
           >
-            <h2>{row.TeamA} </h2>
-            <TextField
-              id="outlined-basic"
-              variant="outlined"
-              style={{ width: 50 }}
-            />
-            <TextField
-              id="outlined-basic"
-              variant="outlined"
-              style={{ width: 50 }}
-            />
-            <h2> {row.TeamB} </h2>
+            <h1>{key}</h1>
+            {value.map((data: any, index: React.Key | null | undefined) => (
+              <Box
+                pb={0.01}
+                sx={{ display: "flex", alignItems: "center" }}
+                key={index}
+              >
+                <h2>{data.TeamA} </h2>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  style={{ width: 50 }}
+                />
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  style={{ width: 50 }}
+                />
+                <h2> {data.TeamB} </h2>
+              </Box>
+            ))}
           </Box>
-        ))}
-        </div>
-            
-          
         ))}
       </Container>
     </ThemeProvider>
   );
 };
 export default Predictions;
+
+/* {rowData.map((row, index) => (
+          <div>
+            {Object.entries(row).map(([key, _], index) => (
+              <Box
+                m={23}
+                pt={0.2}
+                sx={{ display: "flex", alignItems: "center" }}
+                key={index}
+              >
+                <h2>{key} </h2>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  style={{ width: 50 }}
+                />
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  style={{ width: 50 }}
+                />
+                <h2> {row.TeamB} </h2>
+              </Box>
+            ))}
+          </div>
+        ))} */
