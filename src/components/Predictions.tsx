@@ -24,7 +24,7 @@ interface gameDataI {
 
 const fetchTableEntries = async (): Promise<Response> => {
   return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-user-predictions",
+    "http://127.0.0.1:8000/api/user-actions/get-user-predictions",
     {
       method: "GET",
       headers: {
@@ -39,8 +39,7 @@ const fetchTableEntries = async (): Promise<Response> => {
 
 const Predictions = () => {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [rowData, setRowData] = React.useState({});
-  // console.log(rowData);
+  const [rowData, setRowData] = React.useState<groupDataI>({});
 
   React.useEffect(() => {
     fetchTableEntries()
@@ -68,7 +67,7 @@ const Predictions = () => {
         }}
         maxWidth="xl"
       >
-        {Object.entries(rowData).map(([key, value]: any, index) => (
+        {Object.entries(rowData).map(([group, group_data], index) => (
           <Box
             pt={0.2}
             pr={0.1}
@@ -81,14 +80,14 @@ const Predictions = () => {
             }}
             key={index}
           >
-            <h1>{key}</h1>
-            {value.map((data: any, index: React.Key | null | undefined) => (
+            <h1>{group}</h1>
+            {group_data.map((matches, index) => (
               <Box
                 pb={0.01}
                 sx={{ display: "flex", alignItems: "center" }}
                 key={index}
               >
-                <h2>{data.TeamA} </h2>
+                <h2>{matches.TeamA} </h2>
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
@@ -99,7 +98,7 @@ const Predictions = () => {
                   variant="outlined"
                   style={{ width: 50 }}
                 />
-                <h2> {data.TeamB} </h2>
+                <h2> {matches.TeamB} </h2>
               </Box>
             ))}
           </Box>

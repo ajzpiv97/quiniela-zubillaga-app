@@ -44,3 +44,18 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+
+
+1. Frontend_> 
+    Private Routes -> No puedes login a dashboard sin un token. Logout usuario si token esta vencido
+    Mandar  predictions en este formato Array de    team1: str, team2: str, score1: int, score2: int en este formato
+    
+    Bloquear inputs de predictions si la fecha y hora ya paso
+
+    logout si se pasa el tiempo de el usuario ingresado
+
+    Table arreglar padding margin
+
+

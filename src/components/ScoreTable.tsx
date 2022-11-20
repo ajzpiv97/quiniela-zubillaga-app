@@ -8,9 +8,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Container from "@mui/material/Container";
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const theme = createTheme();
 
@@ -21,25 +20,19 @@ interface rowDataI {
   points: number | string;
 }
 
-
 const fetchTableEntries = async (): Promise<Response> => {
-  return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-ranking",
-    {
-      method: "GET",
-      headers: {
-        "Auth-token": localStorage.getItem("token")!,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
+  return await fetch("http://127.0.0.1:8000/api/user-actions/get-ranking", {
+    method: "GET",
+    headers: {
+      "Auth-token": localStorage.getItem("token")!,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 };
 
-
 const ScoreTable = () => {
-
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
@@ -47,47 +40,48 @@ const ScoreTable = () => {
     fetchTableEntries()
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         setIsLoading(false);
         setRowData(data.data);
       });
   }, []);
 
   return isLoading ? (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CircularProgress />
     </Box>
   ) : (
     <ThemeProvider theme={theme}>
-    <Container component="main" maxWidth="xl">
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead >
-          <TableRow>
-            <TableCell>Position</TableCell>
-            <TableCell>Nombre</TableCell>
-            <TableCell>Apellido</TableCell>
-            <TableCell>Puntos</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rowData.map((row, index) => (
-            <TableRow
-              key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.position}
-              </TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.lastName}</TableCell>
-              <TableCell>{row.points === "" ? 0 : row.points}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    </Container>
+      <Container component="main" maxWidth="xl">
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Position</TableCell>
+                <TableCell>Nombre</TableCell>
+                <TableCell>Apellido</TableCell>
+                <TableCell>Puntos</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rowData.map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.position}
+                  </TableCell>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.lastName}</TableCell>
+                  <TableCell>{row.points === "" ? 0 : row.points}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
     </ThemeProvider>
   );
-}
+};
 export default ScoreTable;
