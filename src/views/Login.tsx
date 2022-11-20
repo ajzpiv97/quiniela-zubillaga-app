@@ -39,8 +39,8 @@ const LogIn = () => {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      email: "username@email.com",
-      password: "Password123",
+      email: "",
+      password: "",
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email format").required("Required"),
@@ -122,7 +122,7 @@ const LogIn = () => {
                   id="email"
                   label="Correo Electrónico"
                   name="email"
-                  autoComplete="email"
+                  placeholder="mi_correo@gmail.com"
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -138,7 +138,6 @@ const LogIn = () => {
                   label="Contraseña"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
                 />
               </Grid>
             </Grid>

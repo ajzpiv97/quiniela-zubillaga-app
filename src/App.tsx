@@ -5,14 +5,11 @@ import SignIn from "./views/Login";
 import SignUp from "./views/SignUp";
 import Dashboard from "./views/Dashboard";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { ReactComponent as GiSoccerKick } from "./pulic/icon.svg";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAppSelector, useAppDispatch } from "./hooks/hooks";
 import { isUserAuthenticated } from "./store/actions";
 function App() {
   const isLoggedIn = useAppSelector((state) => state.authReducer["isLoggedIn"]);
-
-  console.log(isLoggedIn, localStorage.getItem("token"));
 
   let location = useLocation();
   let dispatch = useAppDispatch();

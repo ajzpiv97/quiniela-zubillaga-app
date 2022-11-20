@@ -13,6 +13,8 @@ export const isUserAuthenticated = () => {
 
     if (Date.parse(expirationDate) > Date.parse(utcNowDate)) {
       loggedIn = true;
+    } else {
+      localStorage.removeItem("token");
     }
   }
 
