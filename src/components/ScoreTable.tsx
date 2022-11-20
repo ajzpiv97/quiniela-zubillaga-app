@@ -23,15 +23,18 @@ interface rowDataI {
 }
 
 const fetchTableEntries = async (): Promise<Response> => {
-  return await fetch("http://127.0.0.1:8000/api/user-actions/get-ranking", {
-    method: "GET",
-    headers: {
-      "Auth-token": localStorage.getItem("token")!,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
+  return await fetch(
+    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-ranking",
+    {
+      method: "GET",
+      headers: {
+        "Auth-token": localStorage.getItem("token")!,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+  );
 };
 
 const ScoreTable = () => {

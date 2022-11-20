@@ -11,11 +11,17 @@ const buttonObject = {
     error: "Error!",
     otro: "Inicia Sesión",
   },
+  updatePrediction: {
+    loading: "Enviado predicciones......",
+    success: "Exitó",
+    error: "Error!",
+    otro: "Manda tus predicciones!",
+  },
 };
 
 export const submitButtonHelper = (
   buttonStatus: string,
-  component: "signUp" | "login",
+  component: "signUp" | "login" | "updatePrediction",
   isLoading: boolean = false
 ) => {
   if (isLoading) {
