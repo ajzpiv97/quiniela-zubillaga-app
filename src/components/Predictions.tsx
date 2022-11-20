@@ -7,7 +7,11 @@ import TextField from "@mui/material/TextField";
 
 const theme = createTheme();
 
-interface rowDataI {
+interface GroupDataI{
+    [key: string]: Array<gameDataI>
+}
+
+interface gameDataI {
   ActualScore: string;
   TeamA: string;
   TeamB: string;
@@ -31,7 +35,7 @@ const fetchTableEntries = async (): Promise<Response> => {
 
 const Predictions = () => {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
+  const [rowData, setRowData] = React.useState<Array<GroupDataI>>([]);
 
   React.useEffect(() => {
     fetchTableEntries()
@@ -51,8 +55,9 @@ const Predictions = () => {
   ) : (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
-        {rowData.map((row, index) => (
-          <Box
+        {rowData.map((group:Array<GroupDataI>, index) => (
+            <div>{group.map((row,index) => ( 
+                <Box
             m={23}
             pt={0.2}
             sx={{ display: "flex", alignItems: "center" }}
@@ -64,14 +69,17 @@ const Predictions = () => {
               variant="outlined"
               style={{ width: 50 }}
             />
-            <h2> VS </h2>
-            <h2> {row.TeamB} </h2>
             <TextField
               id="outlined-basic"
               variant="outlined"
               style={{ width: 50 }}
             />
+            <h2> {row.TeamB} </h2>
           </Box>
+        ))}
+        </div>
+            
+          
         ))}
       </Container>
     </ThemeProvider>
