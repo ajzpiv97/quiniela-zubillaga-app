@@ -1,9 +1,9 @@
 import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Container from "@mui/material/Container";
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import TextField from '@mui/material/TextField';
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import TextField from "@mui/material/TextField";
 
 const theme = createTheme();
 
@@ -13,7 +13,6 @@ interface rowDataI {
   TeamB: string;
   UserPredictedScore: number | string;
 }
-
 
 const fetchTableEntries = async (): Promise<Response> => {
   return await fetch(
@@ -30,9 +29,7 @@ const fetchTableEntries = async (): Promise<Response> => {
   );
 };
 
-
-const Preditcions  = () => {
-
+const Predictions = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
@@ -40,34 +37,44 @@ const Preditcions  = () => {
     fetchTableEntries()
       .then((response) => response.json())
       .then((data) => {
-        console.log("This is Pred data")
-        console.log(data)
+        console.log("This is Pred data");
+        console.log(data);
         setIsLoading(false);
         setRowData(data.data);
       });
   }, []);
 
   return isLoading ? (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CircularProgress />
     </Box>
   ) : (
     <ThemeProvider theme={theme}>
-    <Container component="main" maxWidth="xl">
-        <Box  >
+      <Container component="main" maxWidth="xl">
         {rowData.map((row, index) => (
-            <Box m={23} pt={0.2} sx={{ display: 'flex', alignItems: 'center'}}>
-            <h2>{ row.TeamA} </h2>
-            <TextField id="outlined-basic" variant="outlined"  style={{width: 50}}  />
-            <h2>  VS  </h2>
+          <Box
+            m={23}
+            pt={0.2}
+            sx={{ display: "flex", alignItems: "center" }}
+            key={index}
+          >
+            <h2>{row.TeamA} </h2>
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              style={{ width: 50 }}
+            />
+            <h2> VS </h2>
             <h2> {row.TeamB} </h2>
-            <TextField id="outlined-basic"  variant="outlined" style={{width: 50}}/>
-            </Box>
-          ))}
-        </Box>
-    
-    </Container>
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              style={{ width: 50 }}
+            />
+          </Box>
+        ))}
+      </Container>
     </ThemeProvider>
   );
-}
-export default Preditcions;
+};
+export default Predictions;
