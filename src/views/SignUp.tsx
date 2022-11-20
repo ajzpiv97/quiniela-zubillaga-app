@@ -32,10 +32,10 @@ const SignUp = () => {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      email: "username@email.com",
-      password: "Password123",
-      name: "Nombre",
-      lastName: "Apellido",
+      email: "",
+      password: "",
+      name: "",
+      lastName: "",
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email format").required("Required"),
