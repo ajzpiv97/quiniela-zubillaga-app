@@ -9,9 +9,12 @@ import { ReactComponent as GiSoccerKick } from "./pulic/icon.svg";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { parseJwt } from "./utils/authenticateUser";
 import AuthVerify from "./components/AuthVerify";
-
+import { useAppSelector, useAppDispatch } from "./hooks/hooks";
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const isLoggedIn = useAppSelector((state) => state.authReducer.isLoggedIn);
+  console.log(isLoggedIn);
+
   // React.useEffect(() => {
   //   const parsed_token = parseJwt(localStorage.getItem("token"));
   //   if (parsed_token === null || parsed_token.expiration_date < Date.now()) {
@@ -22,18 +25,18 @@ function App() {
   //   }
   // }, [pathname]);
   const logIn = () => {
-    setIsLoggedIn(true);
+    // setIsLoggedIn(true);
     console.log("Inside props login", isLoggedIn);
   };
   const logOut = () => {
-    setIsLoggedIn(false);
+    // setIsLoggedIn(false);
     localStorage.removeItem("token");
     console.log("inside  props logout", isLoggedIn);
   };
 
   return (
     <div className="App">
-      <AuthVerify logOut={logOut} logIn={logIn} />
+      <AuthVerify />
       <Box mt={4}>
         <Typography component="h1" variant="h5">
           Quiniela Zubillaga Mundial 2022

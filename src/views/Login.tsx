@@ -18,10 +18,14 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Copyright from "../components/copyright";
 import { submitButtonHelper } from "../utils/styleHelper";
+import { useAppDispatch } from "../hooks/hooks";
+import { isUserAuthenticated } from "../store/actions";
 
 const theme = createTheme();
 
 const LogIn = () => {
+  let dispatch = useAppDispatch();
+
   const [loading, setLoading] = React.useState(false);
   const [buttonColorStatus, setButtonColorStatus] = React.useState<
     | "inherit"
@@ -69,6 +73,8 @@ const LogIn = () => {
             //add redirect
             setButtonColorStatus("success");
             localStorage.setItem("token", response.data.token);
+            dispatch(isUserAuthenticated(true));
+
             return navigate("/dashboard");
           }
         })

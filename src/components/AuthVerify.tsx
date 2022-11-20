@@ -1,10 +1,11 @@
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import { parseJwt } from "../utils/authenticateUser";
-
-const AuthVerify = (props: any) => {
+import { useAppDispatch } from "../hooks/hooks";
+import { isUserAuthenticated } from "../store/actions";
+const AuthVerify = () => {
   let location = useLocation();
-
+  let dispatch = useAppDispatch();
   React.useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -21,15 +22,15 @@ const AuthVerify = (props: any) => {
         utcNowDatePattern !== undefined
       ) {
         if (expirationDatePattern < utcNowDatePattern) {
-          props.logOut();
+          dispatch(isUserAuthenticated(false));
         } else {
-          props.logIn();
+          dispatch(isUserAuthenticated(true));
         }
       } else {
-        props.logOut();
+        dispatch(isUserAuthenticated(false));
       }
     }
-  }, [location, props]);
+  }, [dispatch, location]);
 
   return <></>;
 };

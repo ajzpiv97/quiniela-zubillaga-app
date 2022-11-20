@@ -10,6 +10,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useAppDispatch } from "../hooks/hooks";
+import { isUserAuthenticated } from "../store/actions";
 
 const theme = createTheme();
 
@@ -33,18 +35,24 @@ const fetchTableEntries = async (): Promise<Response> => {
 };
 
 const ScoreTable = () => {
+  let dispatch = useAppDispatch();
+
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
   React.useEffect(() => {
     fetchTableEntries()
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setIsLoading(false);
-        setRowData(data.data);
+      .then((response) => {
+        if (response.code !== undefined && response.code > 300) {
+          dispatch(isUserAuthenticated(false));
+          // throw new Error(response["description"]);
+        } else {
+          setIsLoading(false);
+          setRowData(response.data);
+        }
       });
-  }, []);
+  }, [dispatch]);
 
   return isLoading ? (
     <Box sx={{ display: "flex" }}>

@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { string } from "yup";
+import { isUserAuthenticated } from "../store/actions";
+import { useAppDispatch } from "../hooks/hooks";
 
 const theme = createTheme();
 
@@ -38,17 +40,22 @@ const fetchTableEntries = async (): Promise<Response> => {
 };
 
 const Predictions = () => {
+  let dispatch = useAppDispatch();
+
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<groupDataI>({});
 
   React.useEffect(() => {
     fetchTableEntries()
       .then((response) => response.json())
-      .then((data) => {
-        console.log("This is Pred data");
-        console.log(data);
-        setIsLoading(false);
-        setRowData(data.data);
+      .then((response) => {
+        if (response.code !== undefined && response.code > 300) {
+          dispatch(isUserAuthenticated(false));
+          // throw new Error(response["description"]);
+        } else {
+          setIsLoading(false);
+          setRowData(response.data);
+        }
       });
   }, []);
 
