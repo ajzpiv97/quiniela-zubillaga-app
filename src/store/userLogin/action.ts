@@ -6,7 +6,9 @@ export const isUserAuthenticated = () => {
   let loggedIn = false;
   if (token) {
     const decodedJwt = parseJwt(token);
-    const expirationDate = new Date(decodedJwt.expiration_date).toString();
+    const expirationDate = new Date(
+      decodedJwt.expiration_date * 1000
+    ).toUTCString();
     const utcNowDate = new Date().toUTCString();
     const pattern = /\d{2}:\d{2}:\d{2}/;
 
