@@ -24,3 +24,9 @@ a {
   text-decoration: underline;
   text-decoration-color: rgba(25, 118, 210, 0.4);
 }
+
+#root {
+  position: absolute;
+  min-height: 100vh;
+  min-width: 100vw;
+}

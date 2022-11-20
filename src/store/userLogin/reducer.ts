@@ -1,7 +1,7 @@
 import { USER_AUTHENTICATION } from "./action-types";
 
 const initialState = {
-  isLoggedIn: false,
+  isLoggedIn: null,
 };
 
 interface ActionI {
@@ -10,15 +10,13 @@ interface ActionI {
 }
 
 interface PayloadI {
-  isLoggedIn: boolean;
+  isLoggedIn: boolean | null;
 }
 
 const UserAuthenticatedState = (
   state = initialState,
   { type, payload }: ActionI
 ) => {
-  console.log(type, payload);
-
   switch (type) {
     case USER_AUTHENTICATION:
       return { ...state, ...payload };

@@ -45,14 +45,14 @@ const ScoreTable = () => {
       .then((response) => response.json())
       .then((response) => {
         if (response.code !== undefined && response.code > 300) {
-          dispatch(isUserAuthenticated(false));
+          dispatch(isUserAuthenticated());
           // throw new Error(response["description"]);
         } else {
           setIsLoading(false);
           setRowData(response.data);
         }
       });
-  }, [dispatch]);
+  }, []);
 
   return isLoading ? (
     <Box sx={{ display: "flex" }}>

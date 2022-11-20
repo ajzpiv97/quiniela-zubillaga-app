@@ -73,7 +73,7 @@ const LogIn = () => {
             //add redirect
             setButtonColorStatus("success");
             localStorage.setItem("token", response.data.token);
-            dispatch(isUserAuthenticated(true));
+            dispatch(isUserAuthenticated());
 
             return navigate("/dashboard");
           }
