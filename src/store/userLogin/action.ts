@@ -10,20 +10,9 @@ export const isUserAuthenticated = () => {
       decodedJwt.expiration_date * 1000
     ).toUTCString();
     const utcNowDate = new Date().toUTCString();
-    const pattern = /\d{2}:\d{2}:\d{2}/;
 
-    const expirationDatePattern = expirationDate.match(pattern)![0];
-    const utcNowDatePattern = utcNowDate.match(pattern)![0];
-
-    console.log(expirationDate, utcNowDate);
-
-    if (
-      expirationDatePattern !== undefined &&
-      utcNowDatePattern !== undefined
-    ) {
-      if (expirationDatePattern > utcNowDatePattern) {
-        loggedIn = true;
-      }
+    if (Date.parse(expirationDate) > Date.parse(utcNowDate)) {
+      loggedIn = true;
     }
   }
 
