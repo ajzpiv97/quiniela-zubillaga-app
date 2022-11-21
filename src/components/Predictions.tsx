@@ -285,6 +285,7 @@ const Predictions = () => {
           loadingPosition="start"
           startIcon={<SaveIcon />}
           color={buttonColorStatus}
+          disabled
         >
           {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}
         </LoadingButton>
