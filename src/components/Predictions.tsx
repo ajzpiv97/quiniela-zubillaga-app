@@ -13,6 +13,7 @@ import * as Yup from "yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import { submitButtonHelper } from "../utils/styleHelper";
+import { parseJwt } from "../utils/authenticateUser";
 
 const theme = createTheme();
 
@@ -86,6 +87,11 @@ const fetchTableEntries = async (): Promise<Response> => {
       },
     }
   );
+};
+
+const decodeToken = (): Object => {
+  const decodedToken = parseJwt(localStorage.getItem("token"));
+  return decodedToken.email;
 };
 
 const Predictions = () => {
@@ -171,8 +177,6 @@ const Predictions = () => {
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<groupDataI>({});
-
-  console.log(rowData);
 
   React.useEffect(() => {
     fetchTableEntries()
@@ -275,9 +279,13 @@ const Predictions = () => {
                         ? values.predictionValues[group][index].score1
                         : ""
                     }
-                    disabled={calculateInputTimeStampGreaterUTCNowTime(
-                      matches.DateTimestamp
-                    )}
+                    disabled={
+                      decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
+                        ? false
+                        : calculateInputTimeStampGreaterUTCNowTime(
+                            matches.DateTimestamp
+                          )
+                    }
                   />
                   <TextField
                     required
@@ -293,9 +301,13 @@ const Predictions = () => {
                         ? values.predictionValues[group][index].score2
                         : ""
                     }
-                    disabled={calculateInputTimeStampGreaterUTCNowTime(
-                      matches.DateTimestamp
-                    )}
+                    disabled={
+                      decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
+                        ? false
+                        : calculateInputTimeStampGreaterUTCNowTime(
+                            matches.DateTimestamp
+                          )
+                    }
                   />
                   <Typography component="h4">{matches.TeamB} </Typography>
                 </Box>
@@ -313,7 +325,11 @@ const Predictions = () => {
           loadingPosition="start"
           startIcon={<SaveIcon />}
           color={buttonColorStatus}
-          disabled={disableButton()}
+          disabled={
+            decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
+              ? false
+              : disableButton()
+          }
         >
           {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}
         </LoadingButton>
