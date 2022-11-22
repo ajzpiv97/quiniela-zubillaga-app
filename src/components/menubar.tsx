@@ -58,7 +58,6 @@ const MenuBar = () => {
           >
             <Tab label="Tabla de posiciones" {...a11yProps(0)} />
             <Tab label="Predicciones" {...a11yProps(1)} />
-            <div>Hello</div>
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
