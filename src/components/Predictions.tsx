@@ -36,6 +36,7 @@ interface gameDataI {
   TeamA: string;
   TeamB: string;
   UserPredictedScore: string;
+  DateTimestamp: number;
 }
 
 const normalizeObject = (obj: groupDataRequestI): Array<gameDataRequestI> => {
@@ -53,9 +54,28 @@ const checkIfObjectIsNotEmpty = (obj: Object): boolean => {
   );
 };
 
+const calculateInputTimeStampGreaterUTCNowTime = (
+  inputTimestamp: number
+): boolean => {
+  const inputDate = new Date(inputTimestamp * 1000).toString();
+  const utcNowDate = new Date().toString();
+  if (Date.parse(inputDate) < Date.parse(utcNowDate)) {
+    return true;
+  }
+
+  return false;
+};
+
+const disableButton = (): boolean => {
+  const limitUTCTime = new Date(1669111200 * 1000).toUTCString();
+  const currentUTCTime = new Date().toUTCString();
+
+  return Date.parse(currentUTCTime) >= Date.parse(limitUTCTime);
+};
+
 const fetchTableEntries = async (): Promise<Response> => {
   return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com//api/user-actions/get-user-predictions",
+    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-user-predictions",
     {
       method: "GET",
       headers: {
@@ -151,6 +171,8 @@ const Predictions = () => {
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<groupDataI>({});
+
+  console.log(rowData);
 
   React.useEffect(() => {
     fetchTableEntries()
@@ -253,6 +275,9 @@ const Predictions = () => {
                         ? values.predictionValues[group][index].score1
                         : ""
                     }
+                    disabled={calculateInputTimeStampGreaterUTCNowTime(
+                      matches.DateTimestamp
+                    )}
                   />
                   <TextField
                     required
@@ -268,6 +293,9 @@ const Predictions = () => {
                         ? values.predictionValues[group][index].score2
                         : ""
                     }
+                    disabled={calculateInputTimeStampGreaterUTCNowTime(
+                      matches.DateTimestamp
+                    )}
                   />
                   <Typography component="h4">{matches.TeamB} </Typography>
                 </Box>
@@ -285,6 +313,7 @@ const Predictions = () => {
           loadingPosition="start"
           startIcon={<SaveIcon />}
           color={buttonColorStatus}
+          disabled={disableButton()}
         >
           {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}
         </LoadingButton>
