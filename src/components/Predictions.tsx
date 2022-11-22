@@ -4,7 +4,6 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
-import { string } from "yup";
 import { isUserAuthenticated } from "../store/actions";
 import { useAppDispatch } from "../hooks/hooks";
 import { useFormik } from "formik";
@@ -221,6 +220,7 @@ const Predictions = () => {
       });
       formik.setFieldValue("predictionValues", rows);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowData]);
 
   return isLoading ? (

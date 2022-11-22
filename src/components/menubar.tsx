@@ -1,15 +1,14 @@
 import * as React from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+// import { createTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ScoreTable from "./ScoreTable";
 import Predictions from "./Predictions";
-<ScoreTable></ScoreTable>;
-interface menuBarI {
-  pages: Array<string>;
-}
+// interface menuBarI {
+//   pages: Array<string>;
+// }
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -40,7 +39,7 @@ function a11yProps(index: number) {
   };
 }
 
-const theme = createTheme();
+// const theme = createTheme();
 
 const MenuBar = () => {
   const [value, setValue] = React.useState(0);
@@ -59,6 +58,7 @@ const MenuBar = () => {
           >
             <Tab label="Tabla de posiciones" {...a11yProps(0)} />
             <Tab label="Predicciones" {...a11yProps(1)} />
+            <div>Hello</div>
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>

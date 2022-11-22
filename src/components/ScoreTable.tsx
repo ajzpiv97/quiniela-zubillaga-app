@@ -55,7 +55,7 @@ const ScoreTable = () => {
           setRowData(response.data);
         }
       });
-  }, []);
+  }, [dispatch]);
 
   return isLoading ? (
     <Box sx={{ display: "flex" }}>
