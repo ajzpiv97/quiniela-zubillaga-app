@@ -57,7 +57,7 @@ const MenuBar = () => {
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="Tabla" {...a11yProps(0)} />
+            <Tab label="Tabla de posiciones" {...a11yProps(0)} />
             <Tab label="Predicciones" {...a11yProps(1)} />
           </Tabs>
         </Box>
