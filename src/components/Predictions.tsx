@@ -4,7 +4,6 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
-import { isUserAuthenticated } from "../store/actions";
 import { useAppDispatch } from "../hooks/hooks";
 import { useFormik } from "formik";
 import { Typography } from "@mui/material";
@@ -12,7 +11,9 @@ import * as Yup from "yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import { submitButtonHelper } from "../utils/styleHelper";
-import { parseJwt } from "../utils/authenticateUser";
+import { apiCall, parseJwt, signOut } from "../utils/authenticateUser";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -32,8 +33,8 @@ interface groupDataRequestI {
 interface gameDataRequestI {
   team1: string;
   team2: string;
-  score1: string | number;
-  score2: string | number;
+  score1: number | string;
+  score2: number | string;
 }
 
 interface gameDataI {
@@ -83,21 +84,6 @@ const allowInputPredictionsBasedOnDateRange = (
   return Date.parse(utcNowDate) >= Date.parse(endDate);
 };
 
-const fetchTableEntries = async (roundId: number): Promise<Response> => {
-  return await fetch(
-    `https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-user-predictions?roundId=${roundId}`,
-    {
-      method: "GET",
-      headers: {
-        "Auth-token": localStorage.getItem("token")!,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
-};
-
 const decodeToken = (): Object => {
   const decodedToken = parseJwt(localStorage.getItem("token"));
   return decodedToken.email;
@@ -109,6 +95,8 @@ const Predictions = ({
   endPredictionTimestamp,
 }: PredictionsI) => {
   let dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [loading, setLoading] = React.useState(false);
   const [buttonColorStatus, setButtonColorStatus] = React.useState<
     | "inherit"
@@ -142,68 +130,77 @@ const Predictions = ({
 
     onSubmit: () => {
       setLoading(formik.isSubmitting);
-      fetch(
-        "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/update-predictions",
-        {
-          method: "POST",
-          headers: {
-            "Auth-token": localStorage.getItem("token")!,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: JSON.stringify({
-            predictions: normalizeObject(values.predictionValues),
-          }),
-        }
-      )
+      apiCall({
+        domain: "https://quiniela-zubillaga-api.herokuapp.com",
+        endpoint: "api/user-actions/update-predictions",
+        method: "post",
+        headers: {
+          "Auth-token": localStorage.getItem("token")!,
+          "Access-Control-Allow-Origin": "*",
+        },
+        data: {
+          predictions: normalizeObject(values.predictionValues),
+        },
+      })
         .then((response) => {
-          setLoading(false);
-          return response.json();
-        })
-        .then((response) => {
-          if (
-            response.code === 400 ||
-            response.code === 401 ||
-            response.code === 422 ||
-            response.code === 500
-          ) {
-            setButtonColorStatus("error");
-            throw new Error(response["description"]);
-          } else {
+          if (response.status === 200 || response?.status === 201) {
+            setLoading(false);
             setButtonColorStatus("success");
             setTimeout(() => {
               setButtonColorStatus("primary");
             }, 1000);
           }
         })
-        .catch((error) => {
-          window.alert(error);
-          setTimeout(() => {
-            setButtonColorStatus("primary");
-          }, 1000);
+        .catch(({ response }: AxiosError) => {
+          setLoading(false);
+          if (response?.status === 422 || response?.status === 400) {
+            setButtonColorStatus("error");
+            setTimeout(() => {
+              setButtonColorStatus("primary");
+            }, 1000);
+          } else {
+            const { description } = response?.data as {
+              code: number;
+              description: string;
+            };
+            window.alert(description);
+            return signOut({
+              dispatch: dispatch,
+              status: description,
+              navigate: navigate,
+            });
+          }
         });
     },
   });
-
   const { values } = formik;
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<groupDataI>({});
 
   React.useEffect(() => {
-    fetchTableEntries(roundId)
-      .then((response) => response.json())
+    apiCall({
+      domain: "https://quiniela-zubillaga-api.herokuapp.com",
+      endpoint: `api/user-actions/get-user-predictions?roundId=${roundId}`,
+      method: "get",
+      headers: {
+        "Auth-token": localStorage.getItem("token")!,
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
       .then((response) => {
-        if (response.code !== undefined && response.code > 300) {
-          dispatch(isUserAuthenticated());
-          throw new Error("Sessión expiró!");
-        } else {
-          setRowData(response.data[0].games);
+        if (response.status === 200 || response.status === 201) {
+          setRowData(response.data["data"][0].games);
         }
       })
-      .catch((error) => window.alert(error));
-  }, [dispatch, roundId]);
+      .catch(({ response }: AxiosError) => {
+        return signOut({
+          dispatch,
+          status: response?.statusText,
+          navigate,
+        });
+      });
+  }, [dispatch, navigate, roundId]);
 
   React.useEffect(() => {
     if (checkIfObjectIsNotEmpty(rowData)) {

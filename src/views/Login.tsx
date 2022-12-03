@@ -16,10 +16,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Copyright from "../components/copyright";
+import Copyright from "../components/Copyright";
 import { submitButtonHelper } from "../utils/styleHelper";
 import { useAppDispatch } from "../hooks/hooks";
 import { isUserAuthenticated } from "../store/actions";
+import { apiCall } from "../utils/authenticateUser";
 
 const theme = createTheme();
 
@@ -49,37 +50,30 @@ const LogIn = () => {
 
     onSubmit: () => {
       setLoading(formik.isSubmitting);
-      fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/login", {
-        method: "POST",
+      apiCall({
+        domain: "https://quiniela-zubillaga-api.herokuapp.com",
+        endpoint: "api/auth/login",
+        method: "post",
         headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
           "Access-Control-Allow-Origin": "*",
         },
-        body: JSON.stringify({
-          email: formik.values.email,
-          password: formik.values.password,
-        }),
+        data: { email: formik.values.email, password: formik.values.password },
       })
         .then((response) => {
           setLoading(false);
-          return response.json();
-        })
-        .then((response) => {
-          if (response.code === 401 || response.code === 400) {
-            setButtonColorStatus("error");
-            throw new Error(response["description"]);
-          } else {
-            //add redirect
-            setButtonColorStatus("success");
-            localStorage.setItem("token", response.data.token);
-            dispatch(isUserAuthenticated());
-
-            return navigate("/dashboard");
-          }
+          setButtonColorStatus("success");
+          localStorage.setItem("token", response.data.data.token);
+          dispatch(isUserAuthenticated());
+          return navigate("/dashboard");
         })
         .catch((error) => {
-          window.alert(error);
+          setLoading(false);
+          setButtonColorStatus("error");
+          const { description } = error?.response?.data as {
+            code: number;
+            description: string;
+          };
+          window.alert(description);
           setTimeout(() => {
             setButtonColorStatus("primary");
           }, 1000);

@@ -1,5 +1,4 @@
 import * as React from "react";
-// import { createTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -11,7 +10,7 @@ interface MenuBarI {
 }
 
 interface TabsI {
-  label: string;
+  label: string | React.ReactNode;
   children?: React.ReactNode;
 }
 
