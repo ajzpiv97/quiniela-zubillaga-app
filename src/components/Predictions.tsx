@@ -70,13 +70,18 @@ const allowInputPredictionsBasedOnDateRange = (
 
   if (startTimestamp !== null) {
     let startDate = new Date(startTimestamp * 1000).toUTCString();
-    return !(
-      Date.parse(utcNowDate) <= Date.parse(endDate) ||
-      Date.parse(utcNowDate) >= Date.parse(startDate)
-    );
+
+    if (
+      Date.parse(utcNowDate) >= Date.parse(endDate) ||
+      Date.parse(utcNowDate) <= Date.parse(startDate)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
-  return !(Date.parse(utcNowDate) <= Date.parse(endDate));
+  return Date.parse(utcNowDate) >= Date.parse(endDate);
 };
 
 const fetchTableEntries = async (roundId: number): Promise<Response> => {
