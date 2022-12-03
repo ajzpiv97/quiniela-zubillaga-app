@@ -276,7 +276,9 @@ const Predictions = ({
                   sx={{ display: "flex", alignItems: "center" }}
                   key={index}
                 >
-                  <Typography component="h4">{matches.TeamA}</Typography>
+                  <Typography component="h4">
+                    {matches.TeamA === "ESPANA" ? "ESPAÑA" : matches.TeamA}
+                  </Typography>
                   <TextField
                     required
                     id="outlined-basic"
@@ -323,7 +325,9 @@ const Predictions = ({
                           )
                     }
                   />
-                  <Typography component="h4">{matches.TeamB} </Typography>
+                  <Typography component="h4">
+                    {matches.TeamB === "ESPANA" ? "ESPAÑA" : matches.TeamB}
+                  </Typography>
                 </Box>
               ))}
             </Box>
