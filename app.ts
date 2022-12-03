@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 
 const path = require("path");
-console.log(process.env.PORT);
+
 const port = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === "production") {
