@@ -2,7 +2,6 @@ import { Box, CircularProgress } from "@mui/material";
 import * as React from "react";
 import MenuBar from "../components/menubar";
 import Predictions from "../components/Predictions";
-import ScoreTable from "../components/ScoreTable";
 import { useAppDispatch } from "../hooks/hooks";
 import { isUserAuthenticated } from "../store/actions";
 

@@ -12,7 +12,6 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAppDispatch } from "../hooks/hooks";
 import { isUserAuthenticated } from "../store/actions";
-import useWindowSize from "../hooks/useWindowSize";
 
 const theme = createTheme();
 
@@ -44,8 +43,6 @@ const ScoreTable = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
-  const { width } = useWindowSize();
-
   React.useEffect(() => {
     fetchTableEntries()
       .then((response) => response.json())
@@ -53,7 +50,7 @@ const ScoreTable = () => {
         if (response.code !== undefined && response.code > 300) {
           dispatch(isUserAuthenticated());
           localStorage.removeItem("token");
-          // throw new Error(response["description"]);
+          throw new Error(response["description"]);
         } else {
           setIsLoading(false);
           setRowData(response.data);

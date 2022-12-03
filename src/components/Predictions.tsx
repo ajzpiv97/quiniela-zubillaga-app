@@ -13,7 +13,6 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import { submitButtonHelper } from "../utils/styleHelper";
 import { parseJwt } from "../utils/authenticateUser";
-import useWindowSize from "../hooks/useWindowSize";
 
 const theme = createTheme();
 
@@ -110,7 +109,6 @@ const Predictions = ({
   endPredictionTimestamp,
 }: PredictionsI) => {
   let dispatch = useAppDispatch();
-  const { width } = useWindowSize();
   const [loading, setLoading] = React.useState(false);
   const [buttonColorStatus, setButtonColorStatus] = React.useState<
     | "inherit"
