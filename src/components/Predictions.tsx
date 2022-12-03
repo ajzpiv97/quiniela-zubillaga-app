@@ -13,9 +13,15 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import { submitButtonHelper } from "../utils/styleHelper";
 import { parseJwt } from "../utils/authenticateUser";
+import useWindowSize from "../hooks/useWindowSize";
 
 const theme = createTheme();
 
+interface PredictionsI {
+  roundId: number;
+  startPredictionTimestamp: number;
+  endPredictionTimestamp: number;
+}
 interface groupDataI {
   [key: string]: Array<gameDataI>;
 }
@@ -54,28 +60,28 @@ const checkIfObjectIsNotEmpty = (obj: Object): boolean => {
   );
 };
 
-const calculateInputTimeStampGreaterUTCNowTime = (
-  inputTimestamp: number
+const allowInputPredictionsBasedOnDateRange = (
+  startTimestamp: number | null,
+  endTimestamp: number
 ): boolean => {
-  const inputDate = new Date(inputTimestamp * 1000).toString();
-  const utcNowDate = new Date().toString();
-  if (Date.parse(inputDate) < Date.parse(utcNowDate)) {
-    return true;
+  const endDate = new Date(endTimestamp * 1000).toUTCString();
+
+  const utcNowDate = new Date().toUTCString();
+
+  if (startTimestamp !== null) {
+    let startDate = new Date(startTimestamp * 1000).toUTCString();
+    return !(
+      Date.parse(utcNowDate) <= Date.parse(endDate) ||
+      Date.parse(utcNowDate) >= Date.parse(startDate)
+    );
   }
 
-  return false;
+  return !(Date.parse(utcNowDate) <= Date.parse(endDate));
 };
 
-const disableButton = (): boolean => {
-  const limitUTCTime = new Date(1669111200 * 1000).toUTCString();
-  const currentUTCTime = new Date().toUTCString();
-
-  return Date.parse(currentUTCTime) >= Date.parse(limitUTCTime);
-};
-
-const fetchTableEntries = async (): Promise<Response> => {
+const fetchTableEntries = async (roundId: number): Promise<Response> => {
   return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-user-predictions",
+    `https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-user-predictions?roundId=${roundId}`,
     {
       method: "GET",
       headers: {
@@ -93,8 +99,13 @@ const decodeToken = (): Object => {
   return decodedToken.email;
 };
 
-const Predictions = () => {
+const Predictions = ({
+  roundId,
+  startPredictionTimestamp,
+  endPredictionTimestamp,
+}: PredictionsI) => {
   let dispatch = useAppDispatch();
+  const { width } = useWindowSize();
   const [loading, setLoading] = React.useState(false);
   const [buttonColorStatus, setButtonColorStatus] = React.useState<
     | "inherit"
@@ -178,19 +189,18 @@ const Predictions = () => {
   const [rowData, setRowData] = React.useState<groupDataI>({});
 
   React.useEffect(() => {
-    fetchTableEntries()
+    fetchTableEntries(roundId)
       .then((response) => response.json())
       .then((response) => {
         if (response.code !== undefined && response.code > 300) {
           dispatch(isUserAuthenticated());
           throw new Error("Sessión expiró!");
         } else {
-          setIsLoading(false);
-          setRowData(response.data);
+          setRowData(response.data[0].games);
         }
       })
       .catch((error) => window.alert(error));
-  }, [dispatch]);
+  }, [dispatch, roundId]);
 
   React.useEffect(() => {
     if (checkIfObjectIsNotEmpty(rowData)) {
@@ -198,10 +208,11 @@ const Predictions = () => {
       Object.entries(rowData).forEach(([key, array]) => {
         array.forEach((value) => {
           let score1, score2;
+
           if (value.UserPredictedScore) {
-            const split_scores = value.UserPredictedScore.split("-");
-            score1 = Number(split_scores[0]);
-            score2 = Number(split_scores[1]);
+            const splitScores = value.UserPredictedScore.split("-");
+            score1 = splitScores[0] !== "" ? Number(splitScores[0]) : "";
+            score2 = splitScores[1] !== "" ? Number(splitScores[1]) : "";
           } else {
             score1 = score2 = "";
           }
@@ -219,12 +230,13 @@ const Predictions = () => {
         });
       });
       formik.setFieldValue("predictionValues", rows);
+      setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowData]);
 
   return isLoading ? (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", justifyContent: "center" }}>
       <CircularProgress />
     </Box>
   ) : (
@@ -235,7 +247,7 @@ const Predictions = () => {
           display: "inline-flex",
           flexWrap: "wrap",
           flexDirection: "row",
-          justifyContent: "space-between",
+          justifyContent: "space-around",
         }}
         onSubmit={formik.handleSubmit}
         maxWidth="xl"
@@ -282,8 +294,9 @@ const Predictions = () => {
                     disabled={
                       decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
                         ? false
-                        : calculateInputTimeStampGreaterUTCNowTime(
-                            matches.DateTimestamp
+                        : allowInputPredictionsBasedOnDateRange(
+                            startPredictionTimestamp,
+                            endPredictionTimestamp
                           )
                     }
                   />
@@ -304,8 +317,9 @@ const Predictions = () => {
                     disabled={
                       decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
                         ? false
-                        : calculateInputTimeStampGreaterUTCNowTime(
-                            matches.DateTimestamp
+                        : allowInputPredictionsBasedOnDateRange(
+                            startPredictionTimestamp,
+                            endPredictionTimestamp
                           )
                     }
                   />
@@ -328,7 +342,10 @@ const Predictions = () => {
           disabled={
             decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
               ? false
-              : disableButton()
+              : allowInputPredictionsBasedOnDateRange(
+                  startPredictionTimestamp,
+                  endPredictionTimestamp
+                )
           }
         >
           {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}

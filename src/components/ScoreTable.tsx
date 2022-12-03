@@ -12,6 +12,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAppDispatch } from "../hooks/hooks";
 import { isUserAuthenticated } from "../store/actions";
+import useWindowSize from "../hooks/useWindowSize";
 
 const theme = createTheme();
 
@@ -43,12 +44,15 @@ const ScoreTable = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
+  const { width } = useWindowSize();
+
   React.useEffect(() => {
     fetchTableEntries()
       .then((response) => response.json())
       .then((response) => {
         if (response.code !== undefined && response.code > 300) {
           dispatch(isUserAuthenticated());
+          localStorage.removeItem("token");
           // throw new Error(response["description"]);
         } else {
           setIsLoading(false);
@@ -63,12 +67,12 @@ const ScoreTable = () => {
     </Box>
   ) : (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xl">
+      <Container component="main" maxWidth="xl" sx={{ display: "grid" }}>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow>
-                <TableCell>Position</TableCell>
+                <TableCell>Posición</TableCell>
                 <TableCell>Nombre</TableCell>
                 <TableCell>Apellido</TableCell>
                 <TableCell>Puntos</TableCell>

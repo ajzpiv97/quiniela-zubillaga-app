@@ -4,11 +4,16 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import ScoreTable from "./ScoreTable";
-import Predictions from "./Predictions";
-// interface menuBarI {
-//   pages: Array<string>;
-// }
+interface MenuBarI {
+  pages: Array<TabsI>;
+  borderBottom?: number;
+  centered?: boolean;
+}
+
+interface TabsI {
+  label: string;
+  children?: React.ReactNode;
+}
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -27,7 +32,9 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && (
+        <Box sx={{ paddingTop: 3, paddingBottom: 3 }}>{children}</Box>
+      )}
     </div>
   );
 }
@@ -41,7 +48,7 @@ function a11yProps(index: number) {
 
 // const theme = createTheme();
 
-const MenuBar = () => {
+const MenuBar = ({ pages, borderBottom = 1, centered = false }: MenuBarI) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -50,22 +57,18 @@ const MenuBar = () => {
   return (
     <Container component="main" maxWidth="xl">
       <Box sx={{ width: "100%" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-          >
-            <Tab label="Tabla de posiciones" {...a11yProps(0)} />
-            <Tab label="Predicciones" {...a11yProps(1)} />
+        <Box sx={{ borderBottom: borderBottom, borderColor: "divider" }}>
+          <Tabs value={value} onChange={handleChange} centered={centered}>
+            {pages.map(({ label }, index: number) => (
+              <Tab label={label} {...a11yProps(index)} key={index} />
+            ))}
           </Tabs>
         </Box>
-        <TabPanel value={value} index={0}>
-          <ScoreTable />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <Predictions />
-        </TabPanel>
+        {pages.map(({ children }, index) => (
+          <TabPanel value={value} index={index} key={index}>
+            {children}
+          </TabPanel>
+        ))}
       </Box>
     </Container>
   );
