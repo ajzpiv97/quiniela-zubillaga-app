@@ -57,8 +57,21 @@ const MenuBar = ({ pages, borderBottom = 1, centered = false }: MenuBarI) => {
   return (
     <Container component="main" maxWidth="xl">
       <Box sx={{ width: "100%" }}>
-        <Box sx={{ borderBottom: borderBottom, borderColor: "divider" }}>
-          <Tabs value={value} onChange={handleChange} centered={centered}>
+        <Box
+          sx={{
+            borderBottom: borderBottom,
+            borderColor: "divider",
+            display: "flex",
+            justifyContent: centered ? "center" : "",
+            width: "100%",
+          }}
+        >
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
             {pages.map(({ label }, index: number) => (
               <Tab label={label} {...a11yProps(index)} key={index} />
             ))}
