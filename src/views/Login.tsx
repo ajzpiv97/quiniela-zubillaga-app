@@ -16,11 +16,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Copyright from "../components/Copyright";
 import { submitButtonHelper } from "../utils/styleHelper";
 import { useAppDispatch } from "../hooks/hooks";
 import { isUserAuthenticated } from "../store/actions";
 import { apiCall } from "../utils/authenticateUser";
+import CustomCopyright from "../components/CustomCopyright";
 
 const theme = createTheme();
 
@@ -167,7 +167,7 @@ const LogIn = () => {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <CustomCopyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

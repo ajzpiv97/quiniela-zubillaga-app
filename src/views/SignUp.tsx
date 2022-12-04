@@ -13,7 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Copyright from "../components/Copyright";
+import CustomCopyright from "../components/CustomCopyright";
 import { submitButtonHelper } from "../utils/styleHelper";
 import { apiCall } from "../utils/authenticateUser";
 
@@ -190,7 +190,7 @@ const SignUp = () => {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        <CustomCopyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );
