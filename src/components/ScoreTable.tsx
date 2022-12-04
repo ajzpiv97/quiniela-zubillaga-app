@@ -1,4 +1,7 @@
 import * as React from "react";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,6 +25,7 @@ interface rowDataI {
   lastName: string;
   position: number;
   points: number | string;
+  positionMove: number;
 }
 
 const ScoreTable = () => {
@@ -69,22 +73,35 @@ const ScoreTable = () => {
                 <TableCell>Nombre</TableCell>
                 <TableCell>Apellido</TableCell>
                 <TableCell>Puntos</TableCell>
+                <TableCell>Cambio de Posición</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowData.map((row, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.position}
-                  </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.lastName}</TableCell>
-                  <TableCell>{row.points === "" ? 0 : row.points}</TableCell>
-                </TableRow>
-              ))}
+              {rowData.map(
+                ({ position, name, lastName, points, positionMove }, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {position}
+                    </TableCell>
+                    <TableCell>{name}</TableCell>
+                    <TableCell>{lastName}</TableCell>
+                    <TableCell>{points === "" ? 0 : points}</TableCell>
+                    <TableCell sx={{ display: "flex" }}>
+                      <span style={{ flex: 0.05 }}>{positionMove}</span>
+                      {positionMove > 0 ? (
+                        <TrendingUpIcon color="success" />
+                      ) : positionMove < 0 ? (
+                        <TrendingDownIcon color="error" />
+                      ) : (
+                        <TrendingFlatIcon />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
             </TableBody>
           </Table>
         </TableContainer>
