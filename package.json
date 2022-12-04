@@ -30,7 +30,7 @@
     "yup": "0.32.11"
   },
   "scripts": {
-    "start-dev": "REACT_APP_NOT_SECRET_CODE=$USER react-scripts start",
+    "start-dev": "REACT_APP_NOT_SECRET_CODE=$USER REACT_APP_API_URL=$API_URL react-scripts start",
     "start": "node app.ts",
     "build": "REACT_APP_NOT_SECRET_CODE=$USER react-scripts build",
     "test": "react-scripts test",

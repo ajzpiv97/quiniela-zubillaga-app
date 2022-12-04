@@ -32,7 +32,6 @@ const ScoreTable = () => {
 
   React.useEffect(() => {
     apiCall({
-      domain: "https://quiniela-zubillaga-api.herokuapp.com",
       endpoint: "api/user-actions/get-ranking",
       method: "get",
       headers: {

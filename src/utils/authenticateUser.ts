@@ -13,7 +13,6 @@ export const parseJwt = (token: string | null) => {
 };
 
 interface AxiosI {
-  domain: string;
   endpoint: string;
   method?: string;
   mode?: string;
@@ -22,7 +21,6 @@ interface AxiosI {
 }
 
 export const apiCall = async ({
-  domain,
   endpoint,
   method = "get",
   mode = "cors",
@@ -39,8 +37,7 @@ export const apiCall = async ({
     ...headers,
   };
 
-  const apiUrl = new URL(endpoint, domain);
-
+  const apiUrl = new URL(endpoint, process.env.REACT_APP_API_URL);
   const requestConfig: Record<string, any> = {
     url: apiUrl,
     method: method,

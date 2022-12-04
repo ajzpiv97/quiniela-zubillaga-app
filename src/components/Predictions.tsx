@@ -131,7 +131,6 @@ const Predictions = ({
     onSubmit: () => {
       setLoading(formik.isSubmitting);
       apiCall({
-        domain: "https://quiniela-zubillaga-api.herokuapp.com",
         endpoint: "api/user-actions/update-predictions",
         method: "post",
         headers: {
@@ -180,7 +179,6 @@ const Predictions = ({
 
   React.useEffect(() => {
     apiCall({
-      domain: "https://quiniela-zubillaga-api.herokuapp.com",
       endpoint: `api/user-actions/get-user-predictions?roundId=${roundId}`,
       method: "get",
       headers: {

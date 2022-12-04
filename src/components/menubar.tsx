@@ -7,6 +7,7 @@ interface MenuBarI {
   pages: Array<TabsI>;
   borderBottom?: number;
   centered?: boolean;
+  activeTab?: number;
 }
 
 interface TabsI {
@@ -47,8 +48,13 @@ function a11yProps(index: number) {
 
 // const theme = createTheme();
 
-const MenuBar = ({ pages, borderBottom = 1, centered = false }: MenuBarI) => {
-  const [value, setValue] = React.useState(0);
+const MenuBar = ({
+  pages,
+  borderBottom = 1,
+  centered = false,
+  activeTab = 0,
+}: MenuBarI) => {
+  const [value, setValue] = React.useState(activeTab);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

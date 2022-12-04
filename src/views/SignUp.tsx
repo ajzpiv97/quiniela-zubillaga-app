@@ -48,7 +48,6 @@ const SignUp = () => {
     onSubmit: () => {
       setLoading(formik.isSubmitting);
       apiCall({
-        domain: "https://quiniela-zubillaga-api.herokuapp.com",
         endpoint: "api/auth/register",
         method: "post",
         headers: {
