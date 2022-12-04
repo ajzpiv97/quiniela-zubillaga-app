@@ -282,16 +282,13 @@ const Predictions = ({
             pr={0.1}
             pl={0.1}
             sx={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              flexWrap: "wrap",
+              display: "grid",
             }}
             key={bigIndex}
           >
             <h1>{group}</h1>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }}>
+              <Table sx={{ minWidth: 650, overflowX: "scroll" }}>
                 <TableHead>
                   <StyledTableRow>
                     <StyledTableCell>Equipo A</StyledTableCell>
