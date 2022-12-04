@@ -1,5 +1,5 @@
-import LogoutIcon from "@mui/icons-material/Logout";
 import * as React from "react";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBar from "../components/Menubar";
 import PredictionsTab from "../components/PredictionsTab";
 import ScoreTable from "../components/ScoreTable";
