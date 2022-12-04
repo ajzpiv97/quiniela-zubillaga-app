@@ -11,8 +11,9 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAppDispatch } from "../hooks/hooks";
-import { isUserAuthenticated } from "../store/actions";
-import useWindowSize from "../hooks/useWindowSize";
+import { apiCall, signOut } from "../utils/authenticateUser";
+import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 const theme = createTheme();
 
@@ -23,46 +24,38 @@ interface rowDataI {
   points: number | string;
 }
 
-const fetchTableEntries = async (): Promise<Response> => {
-  return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-ranking",
-    {
-      method: "GET",
-      headers: {
-        "Auth-token": localStorage.getItem("token")!,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
-};
-
 const ScoreTable = () => {
   let dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(true);
   const [rowData, setRowData] = React.useState<Array<rowDataI>>([]);
 
-  const { width } = useWindowSize();
-
   React.useEffect(() => {
-    fetchTableEntries()
-      .then((response) => response.json())
+    apiCall({
+      endpoint: "api/user-actions/get-ranking",
+      method: "get",
+      headers: {
+        "Auth-token": localStorage.getItem("token")!,
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
       .then((response) => {
-        if (response.code !== undefined && response.code > 300) {
-          dispatch(isUserAuthenticated());
-          localStorage.removeItem("token");
-          // throw new Error(response["description"]);
-        } else {
+        if (response.status === 200 || response.status === 200) {
+          setRowData(response.data["data"]);
           setIsLoading(false);
-          setRowData(response.data);
         }
+      })
+      .catch((error: AxiosError) => {
+        const { description } = error?.response?.data as {
+          code: number;
+          description: string;
+        };
+        return signOut({ dispatch, status: description, navigate });
       });
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   return isLoading ? (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", justifyContent: "center" }}>
       <CircularProgress />
     </Box>
   ) : (

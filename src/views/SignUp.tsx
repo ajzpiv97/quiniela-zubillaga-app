@@ -13,8 +13,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Copyright from "../components/copyright";
+import Copyright from "../components/Copyright";
 import { submitButtonHelper } from "../utils/styleHelper";
+import { apiCall } from "../utils/authenticateUser";
 
 const theme = createTheme();
 
@@ -46,37 +47,34 @@ const SignUp = () => {
 
     onSubmit: () => {
       setLoading(formik.isSubmitting);
-      fetch("https://quiniela-zubillaga-api.herokuapp.com/api/auth/register", {
-        method: "POST",
+      apiCall({
+        endpoint: "api/auth/register",
+        method: "post",
         headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
           "Access-Control-Allow-Origin": "*",
         },
-        body: JSON.stringify({
+        data: {
           email: formik.values.email,
           name: formik.values.name,
           password: formik.values.password,
           lastName: formik.values.lastName,
-        }),
+        },
       })
-        .then((response) => {
+        .then(() => {
           setLoading(false);
-          return response.json();
-        })
-        .then((response) => {
-          if (response.code === 400) {
-            setButtonColorStatus("error");
-            throw new Error(response["description"]);
-          } else {
-            setButtonColorStatus("success");
-            setTimeout(() => {
-              return navigate("/login");
-            }, 1000);
-          }
+          setButtonColorStatus("success");
+          setTimeout(() => {
+            return navigate("/login");
+          }, 1000);
         })
         .catch((error) => {
-          window.alert(error);
+          setLoading(false);
+          setButtonColorStatus("error");
+          const { description } = error?.response?.data as {
+            code: number;
+            description: string;
+          };
+          window.alert(description);
           setTimeout(() => {
             setButtonColorStatus("primary");
           }, 1000);

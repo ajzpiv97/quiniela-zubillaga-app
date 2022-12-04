@@ -1,3 +1,6 @@
+import axios, { AxiosResponse } from "axios";
+import { isUserAuthenticated } from "../store/userLogin/action";
+
 export const parseJwt = (token: string | null) => {
   try {
     if (token === null) {
@@ -7,4 +10,56 @@ export const parseJwt = (token: string | null) => {
   } catch (e) {
     return null;
   }
+};
+
+interface AxiosI {
+  endpoint: string;
+  method?: string;
+  mode?: string;
+  headers?: Record<string, string | number | boolean>;
+  data?: Record<string, any>;
+}
+
+export const apiCall = async ({
+  endpoint,
+  method = "get",
+  mode = "cors",
+  headers = {},
+  data = {},
+}: AxiosI): Promise<AxiosResponse> => {
+  const default_headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json;charset=UTF-8",
+  };
+
+  const final_headers = {
+    ...default_headers,
+    ...headers,
+  };
+
+  const apiUrl = new URL(endpoint, process.env.REACT_APP_API_URL);
+  const requestConfig: Record<string, any> = {
+    url: apiUrl,
+    method: method,
+    mode: mode,
+    headers: final_headers,
+    data: data,
+  };
+
+  return await axios.request(requestConfig);
+};
+
+interface signOutI {
+  dispatch: any;
+  status?: string;
+  navigate?: any;
+}
+
+export const signOut = ({ dispatch, status, navigate }: signOutI) => {
+  dispatch(isUserAuthenticated());
+  localStorage.removeItem("token");
+  if (status) {
+    window.alert(status);
+  }
+  return navigate("/");
 };

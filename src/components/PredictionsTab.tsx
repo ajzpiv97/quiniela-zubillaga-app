@@ -1,25 +1,11 @@
 import { Box, CircularProgress } from "@mui/material";
 import * as React from "react";
-import MenuBar from "../components/menubar";
+import MenuBar from "./Menubar";
 import Predictions from "../components/Predictions";
-import ScoreTable from "../components/ScoreTable";
 import { useAppDispatch } from "../hooks/hooks";
-import { isUserAuthenticated } from "../store/actions";
-
-const fetchTableEntries = async (): Promise<Response> => {
-  return await fetch(
-    "https://quiniela-zubillaga-api.herokuapp.com/api/user-actions/get-rounds",
-    {
-      method: "GET",
-      headers: {
-        "Auth-token": localStorage.getItem("token")!,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
-};
+import { apiCall, signOut } from "../utils/authenticateUser";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface RoundDataI {
   id: number;
@@ -35,32 +21,73 @@ interface TabsI {
   children: React.ReactNode;
 }
 
+const setActiveTabBasedOnDate = (
+  startTimestamp: number,
+  endTimestamp: number
+) => {
+  const endDate = new Date(endTimestamp * 1000).toUTCString();
+  const utcNowDate = new Date().toUTCString();
+  const startDate = new Date(startTimestamp * 1000).toUTCString();
+
+  if (
+    Date.parse(utcNowDate) < Date.parse(endDate) &&
+    Date.parse(utcNowDate) >= Date.parse(startDate)
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
 const PredictionsTab = () => {
   let dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [roundData, setRoundData] = React.useState<Array<RoundDataI>>([]);
   const [isLoading, setIsLoading] = React.useState(true);
-
   const [tabs, setTabs] = React.useState<Array<TabsI>>([]);
-
+  const [activeTab, setActiveTab] = React.useState<number>(0);
   React.useEffect(() => {
-    fetchTableEntries()
-      .then((response) => response.json())
+    apiCall({
+      endpoint: "api/user-actions/get-rounds",
+      method: "get",
+      headers: {
+        "Auth-token": localStorage.getItem("token")!,
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
       .then((response) => {
-        if (response.code !== undefined && response.code > 300) {
-          dispatch(isUserAuthenticated());
-          localStorage.removeItem("token");
-          throw new Error("Sessión expiró!");
-        } else {
-          setRoundData(response.data);
+        if (response.status === 200 || 201) {
+          setRoundData(response.data["data"]);
         }
       })
-      .catch((error) => window.alert(error));
-  }, [dispatch]);
+      .catch(({ response }: AxiosError) => {
+        return signOut({
+          dispatch: dispatch,
+          status: response?.statusText,
+          navigate: navigate,
+        });
+      });
+  }, [dispatch, navigate]);
 
   React.useEffect(() => {
+    let tabIndex = -1;
     if (roundData.length !== 0) {
       const tabs = roundData.map(
-        ({ id, name, startPredictionTimestamp, endPredictionTimestamp }) => {
+        (
+          {
+            id,
+            name,
+            startTimestamp,
+            endTimestamp,
+            startPredictionTimestamp,
+            endPredictionTimestamp,
+          },
+          index
+        ) => {
+          if (setActiveTabBasedOnDate(startTimestamp, endTimestamp)) {
+            tabIndex = index;
+          }
           return {
             label: name,
             children: (
@@ -73,17 +100,23 @@ const PredictionsTab = () => {
           };
         }
       );
-
+      setActiveTab(tabIndex > -1 ? tabIndex : 0);
       setTabs(tabs);
       setIsLoading(false);
     }
   }, [roundData]);
+
   return isLoading ? (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <CircularProgress />
     </Box>
   ) : (
-    <MenuBar pages={tabs} borderBottom={0} centered={true} />
+    <MenuBar
+      pages={tabs}
+      borderBottom={0}
+      centered={true}
+      activeTab={activeTab}
+    />
   );
 };
 export default PredictionsTab;

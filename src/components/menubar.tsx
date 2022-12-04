@@ -1,5 +1,4 @@
 import * as React from "react";
-// import { createTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -8,10 +7,11 @@ interface MenuBarI {
   pages: Array<TabsI>;
   borderBottom?: number;
   centered?: boolean;
+  activeTab?: number;
 }
 
 interface TabsI {
-  label: string;
+  label: string | React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -48,8 +48,13 @@ function a11yProps(index: number) {
 
 // const theme = createTheme();
 
-const MenuBar = ({ pages, borderBottom = 1, centered = false }: MenuBarI) => {
-  const [value, setValue] = React.useState(0);
+const MenuBar = ({
+  pages,
+  borderBottom = 1,
+  centered = false,
+  activeTab = 0,
+}: MenuBarI) => {
+  const [value, setValue] = React.useState(activeTab);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
