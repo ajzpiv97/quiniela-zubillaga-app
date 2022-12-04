@@ -1,6 +1,6 @@
 import { Box, CircularProgress } from "@mui/material";
 import * as React from "react";
-import MenuBar from "./Menubar";
+import MenuBar from "./MenuBar";
 import Predictions from "../components/Predictions";
 import { useAppDispatch } from "../hooks/hooks";
 import { apiCall, signOut } from "../utils/authenticateUser";
