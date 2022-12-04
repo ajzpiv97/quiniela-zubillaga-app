@@ -1,12 +1,21 @@
 import * as React from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { useAppDispatch } from "../hooks/hooks";
 import { useFormik } from "formik";
-import { Typography } from "@mui/material";
+import {
+  Paper,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  tableCellClasses,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import * as Yup from "yup";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
@@ -15,8 +24,25 @@ import { apiCall, parseJwt, signOut } from "../utils/authenticateUser";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 
-const theme = createTheme();
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 interface PredictionsI {
   roundId: number;
   startPredictionTimestamp: number;
@@ -238,122 +264,137 @@ const Predictions = ({
       <CircularProgress />
     </Box>
   ) : (
-    <ThemeProvider theme={theme}>
-      <Container
-        component="form"
-        sx={{
-          display: "inline-flex",
-          flexWrap: "wrap",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-        onSubmit={formik.handleSubmit}
-        maxWidth="xl"
-      >
-        {Object.entries(rowData).map(
-          (
-            [group, group_data]: [string, Array<gameDataI>],
-            bigIndex: number
-          ): any => (
-            <Box
-              pt={0.2}
-              pr={0.1}
-              pl={0.1}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                flexWrap: "wrap",
-              }}
-              key={bigIndex}
-            >
-              <h1>{group}</h1>
-              {group_data.map((matches, index) => (
-                <Box
-                  pb={0.01}
-                  sx={{ display: "flex", alignItems: "center" }}
-                  key={index}
-                >
-                  <Typography component="h4">
-                    {matches.TeamA === "ESPANA" ? "ESPAÑA" : matches.TeamA}
-                  </Typography>
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    variant="outlined"
-                    style={{ width: 50 }}
-                    name={`predictionValues[${group}][${index}].score1`}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={
-                      checkIfObjectIsNotEmpty(values.predictionValues) &&
-                      group in values.predictionValues
-                        ? values.predictionValues[group][index].score1
-                        : ""
-                    }
-                    disabled={
-                      decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
-                        ? false
-                        : allowInputPredictionsBasedOnDateRange(
-                            startPredictionTimestamp,
-                            endPredictionTimestamp
-                          )
-                    }
-                  />
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    variant="outlined"
-                    style={{ width: 50 }}
-                    name={`predictionValues[${group}][${index}].score2`}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={
-                      checkIfObjectIsNotEmpty(values.predictionValues) &&
-                      group in values.predictionValues
-                        ? values.predictionValues[group][index].score2
-                        : ""
-                    }
-                    disabled={
-                      decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
-                        ? false
-                        : allowInputPredictionsBasedOnDateRange(
-                            startPredictionTimestamp,
-                            endPredictionTimestamp
-                          )
-                    }
-                  />
-                  <Typography component="h4">
-                    {matches.TeamB === "ESPANA" ? "ESPAÑA" : matches.TeamB}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          )
-        )}
+    <Container
+      component="form"
+      sx={{
+        display: "inline-flex",
+        flexWrap: "wrap",
+        flexDirection: "row",
+        justifyContent: "space-around",
+      }}
+      onSubmit={formik.handleSubmit}
+      maxWidth="xl"
+    >
+      {Object.entries(rowData).map(
+        ([group, group_data]: [string, Array<gameDataI>], bigIndex: number) => (
+          <Box
+            pt={0.2}
+            pr={0.1}
+            pl={0.1}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              flexWrap: "wrap",
+            }}
+            key={bigIndex}
+          >
+            <h1>{group}</h1>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <StyledTableRow>
+                    <StyledTableCell>Equipo A</StyledTableCell>
+                    <StyledTableCell align="center">
+                      Goles Equipo A
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      Goles Equipo B
+                    </StyledTableCell>
+                    <StyledTableCell>Equipo B</StyledTableCell>
+                  </StyledTableRow>
+                </TableHead>
+                <TableBody>
+                  {group_data.map(({ TeamA, TeamB }, index) => (
+                    <StyledTableRow key={index}>
+                      <StyledTableCell component="th" scope="row">
+                        {TeamA === "ESPANA" ? "ESPAÑA" : TeamA}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <TextField
+                          required
+                          id="outlined-basic"
+                          variant="outlined"
+                          style={{ width: 50 }}
+                          name={`predictionValues[${group}][${index}].score1`}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={
+                            checkIfObjectIsNotEmpty(values.predictionValues) &&
+                            group in values.predictionValues
+                              ? values.predictionValues[group][index].score1
+                              : ""
+                          }
+                          disabled={
+                            decodeToken() ===
+                            process.env["REACT_APP_NOT_SECRET_CODE"]
+                              ? false
+                              : allowInputPredictionsBasedOnDateRange(
+                                  startPredictionTimestamp,
+                                  endPredictionTimestamp
+                                )
+                          }
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <TextField
+                          required
+                          id="outlined-basic"
+                          variant="outlined"
+                          style={{ width: 50 }}
+                          name={`predictionValues[${group}][${index}].score2`}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={
+                            checkIfObjectIsNotEmpty(values.predictionValues) &&
+                            group in values.predictionValues
+                              ? values.predictionValues[group][index].score2
+                              : ""
+                          }
+                          disabled={
+                            decodeToken() ===
+                            process.env["REACT_APP_NOT_SECRET_CODE"]
+                              ? false
+                              : allowInputPredictionsBasedOnDateRange(
+                                  startPredictionTimestamp,
+                                  endPredictionTimestamp
+                                )
+                          }
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {TeamB === "ESPANA" ? "ESPAÑA" : TeamB}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )
+      )}
 
-        <LoadingButton
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-          loading={loading}
-          loadingPosition="start"
-          startIcon={<SaveIcon />}
-          color={buttonColorStatus}
-          disabled={
-            decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
-              ? false
-              : allowInputPredictionsBasedOnDateRange(
-                  startPredictionTimestamp,
-                  endPredictionTimestamp
-                )
-          }
-        >
-          {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}
-        </LoadingButton>
-      </Container>
-    </ThemeProvider>
+      <LoadingButton
+        type="submit"
+        fullWidth
+        variant="contained"
+        sx={{ mt: 3, mb: 2 }}
+        loading={loading}
+        loadingPosition="start"
+        startIcon={<SaveIcon />}
+        color={buttonColorStatus}
+        disabled={
+          decodeToken() === process.env["REACT_APP_NOT_SECRET_CODE"]
+            ? false
+            : allowInputPredictionsBasedOnDateRange(
+                startPredictionTimestamp,
+                endPredictionTimestamp
+              )
+        }
+      >
+        {submitButtonHelper(buttonColorStatus, "updatePrediction", loading)}
+      </LoadingButton>
+    </Container>
   );
 };
 export default Predictions;
